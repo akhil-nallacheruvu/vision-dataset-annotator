@@ -2,7 +2,7 @@
 
 A web-based tool for auto-annotating image datasets using Google's Gemini Vision API. Designed to accelerate dataset creation for training vision transformers and vision-language models (VLMs). Supports single and batch image upload, exports to JSONL, CSV, and COCO JSON formats.
 
-**Live Demo:** https://visual-analysis-pipeline.streamlit.app/
+**Live Demo:** https://vision-dataset-annotator.streamlit.app/
 
 ---
 
