@@ -1,17 +1,41 @@
-# Visual Analysis Pipeline
+# Visual Dataset Annotation Pipeline
 
-A web-based image analysis tool that uses Google's Gemini Vision API to return structured JSON insights from any uploaded image. Built with Streamlit and the Google GenAI SDK.
+A web-based tool for auto-annotating image datasets using Google's Gemini Vision API. Designed to accelerate dataset creation for training vision transformers and vision-language models (VLMs). Supports single and batch image upload, exports to JSONL, CSV, and COCO JSON formats.
 
-**Live Demo:** _coming soon_
+**Live Demo:** https://visual-analysis-pipeline.streamlit.app/
 
 ---
 
 ## Features
 
+- Single and batch image upload with progress tracking
+- Generates four annotation types per image: dense captions, object labels, scene/lighting metadata, and VQA pairs
+- Exports to JSONL (VLM fine-tuning), CSV (general purpose), and COCO JSON (object detection pipelines)
 - Modal-based API key authentication with live connection validation
-- Supports JPG, PNG, and WEBP image formats
-- Returns structured JSON output: scene type, detected objects, dominant colors, and a natural language description
 - Model selector with three Gemini free-tier options, with graceful rate limit error handling
+- Running dataset preview and one-click ZIP download of all export formats
+
+## Annotation Output
+
+Each image is annotated with the following fields:
+
+| Field | Description |
+|---|---|
+| `dense_caption` | Detailed 2-4 sentence description covering objects, spatial relationships, lighting, and context — suitable for VLM training |
+| `objects` | List of all identifiable objects in the image |
+| `scene` | Scene type (e.g. indoor, outdoor, aerial, medical) |
+| `lighting` | Lighting conditions (e.g. natural daylight, low light, overcast) |
+| `vqa_pairs` | 3 question-answer pairs per image for visual question answering datasets |
+| `confidence_notes` | Model uncertainty flags for downstream filtering |
+
+## Export Formats
+
+| Format | Use Case |
+|---|---|
+| JSONL | VLM fine-tuning (e.g. LLaVA, InstructBLIP) |
+| CSV | General purpose dataset management |
+| COCO JSON | Object detection pipelines |
+| ZIP | All three formats bundled |
 
 ## Models Supported
 
@@ -43,18 +67,24 @@ streamlit run app.py
 
 1. On launch, a dialog will prompt for your Gemini API key
 2. The key is validated with a test call before the app loads
-3. Upload an image and select a model from the dropdown
-4. Click **Analyze Image** to receive structured JSON output
+3. Choose between single image or batch upload mode
+4. Select a Gemini model and click **Annotate Image** or **Annotate All**
+5. Download the generated dataset as JSONL, CSV, COCO JSON, or ZIP from the sidebar
 
 ## Output Format
 
 ```json
 {
-  "description": "A golden retriever running through a grassy park",
-  "objects": ["dog", "grass", "trees", "sky"],
+  "dense_caption": "A wildlife camera trap image showing two elephants at a watering hole at dusk, with dense vegetation in the background and soft golden light.",
+  "objects": ["elephant", "water", "vegetation", "mud"],
   "scene": "outdoor",
-  "colors": ["green", "golden yellow", "blue"],
-  "confidence_notes": "Breed identification uncertain due to motion blur"
+  "lighting": "golden hour",
+  "vqa_pairs": [
+    {"question": "How many elephants are visible?", "answer": "Two"},
+    {"question": "What time of day does this appear to be?", "answer": "Dusk or golden hour"},
+    {"question": "What are the elephants doing?", "answer": "Drinking or standing at a watering hole"}
+  ],
+  "confidence_notes": "Species confirmed as elephant; exact subspecies uncertain"
 }
 ```
 
